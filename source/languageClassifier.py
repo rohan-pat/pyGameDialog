@@ -19,7 +19,7 @@ class langClassifier():
         self.workspace_id = '09f71121-d51e-4eb2-8d0d-73fb7ba82774'
 
     def getIntent(self, text):
-        """ this method calls the watson conversation service.
+        """ This method calls the watson conversation service.
             input - text returned from ASR.
             output :-
             intent - value of the intent
@@ -38,7 +38,13 @@ class langClassifier():
         )
 
         intentDict = response['intents'][0]
-        entityDict = response['entities'][0]
+        if(response['entities'][0] != []):
+            entityDict = response['entities'][0]
+            entity = entityDict['entity']
+            value = entityDict['value']
+        else:
+            value = "empty"
+
         # check if alternate intent is actually required.
         alternateIntent = response['alternate_intents']
         print(intentDict)
@@ -46,13 +52,11 @@ class langClassifier():
 
         intent = intentDict['intent']
         confidence = intentDict['confidence']
-        entity = entityDict['entity']
-        value = entityDict['value']
 
         #print("intent is ", intent, "confidence is ", confidence)
-        return intent, confidence, entity, value, alternateIntent
+        return intent, value
 
 if __name__ == '__main__':
     test = langClassifier();
-    a,b,c,d,e = test.getIntent("pick the key");
-    print("intent is ", a, "confidence is ", b, "entity is ", c, "value is", d, "alt is", e)
+    # a,b,c,d = test.getIntent("pick the key and hammer");
+    # print("intent is ", a, "confidence is ", b, "entity is ", c, "value is", d)

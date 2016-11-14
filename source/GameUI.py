@@ -109,12 +109,12 @@ class Image:
             pygame.display.update()
             break
 
-    def start_thread(buff):
-        img = Image()
-        while True:
-            action = buff.get()
-            #print(action)
-            img.imagemov(action)
+def start_thread(buff):
+    img = Image()
+    while True:
+        action = buff.get()
+        #print(action)
+        img.imagemov(action)
 
 if __name__ == "__main__":
     buff = Queue()

@@ -19,9 +19,8 @@ class DialogManager:
         self.action = ""
         self.buff = Queue()
         self.gameThread = threading.Thread(
-        target=start_thread, args=(self.buff))
+        target=start_thread, args=(self.buff,))
         self.gameThread.start()
-        )
 
     def dialogManager(self):
         count = 0

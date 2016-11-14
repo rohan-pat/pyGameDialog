@@ -22,6 +22,7 @@ class FrameSlot:
             self.textToSpeech(msg)
         elif(action == "ga"):
             msg= "well hello again"
+            msg= "Well, hello again.You wanna continue?"
             self.textToSpeech(msg)
 
     def possesion(self, action):
@@ -61,6 +62,7 @@ class FrameSlot:
     def unlock(self, action):
         if(action == "ud"):
             msg="You opened the door"
+            msg="The door is now open."
             self.textToSpeech(msg)
         elif(action == "udnk"):
             msg="You do not have the key to open the door"
@@ -75,6 +77,7 @@ class FrameSlot:
     def Break(self, action):
         if(action == "bd"):
             msg="You opened the door"
+            msg="The door is open now"
             self.textToSpeech(msg)
         elif(action == "bdnk"):
             msg="You do not have the hammer"

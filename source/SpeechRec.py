@@ -173,6 +173,8 @@ def listen_print_loop(recognize_stream, sentence):
         word_count = word_count + 1
 
 def getSpeechText():
+    global TEXT
+    TEXT = ""
     with cloud_speech.beta_create_Speech_stub(
             make_channel('speech.googleapis.com', 443)) as service:
         with record_audio(RATE, CHUNK) as buffered_audio_data:
@@ -189,6 +191,7 @@ def getSpeechText():
                 listen_print_loop(recognize_stream, sentence)
                 recognize_stream.cancel()
             except Exception:
+                recognize_stream.cancel()
                 return ''.join(TEXT)
 
 def returnText(signum, stack):

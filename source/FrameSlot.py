@@ -5,6 +5,9 @@ from tempfile import TemporaryFile
 
 class FrameSlot:
 
+    def __init__(self):
+        pass
+
     def textToSpeech(self, msg):
         #print(msg)
         tts = gTTS(text=msg, lang='en')
@@ -25,7 +28,7 @@ class FrameSlot:
             msg= "Well, hello again.You wanna continue?"
             self.textToSpeech(msg)
 
-    def possesion(self, action):
+    def possession(self, action):
         if(action == "pk"):
             msg="You picked up the key"
             self.textToSpeech(msg)

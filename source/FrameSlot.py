@@ -5,9 +5,6 @@ from tempfile import TemporaryFile
 
 class FrameSlot:
 
-    def __init__(self):
-        pass
-
     def textToSpeech(self, msg):
         #print(msg)
         tts = gTTS(text=msg, lang='en')
@@ -21,14 +18,13 @@ class FrameSlot:
 
     def greeting(self, action):
         if(action == "gf"):
-            msg = "Hello, Would "
+            msg = "Hey, The objective of this game is to find your way out of this room by unlocking the door.Let's start, What do you want to do? "
             self.textToSpeech(msg)
         elif(action == "ga"):
-            msg= "well hello again"
             msg= "Well, hello again.You wanna continue?"
             self.textToSpeech(msg)
 
-    def possession(self, action):
+    def possesion(self, action):
         if(action == "pk"):
             msg="You picked up the key"
             self.textToSpeech(msg)
@@ -64,7 +60,6 @@ class FrameSlot:
 
     def unlock(self, action):
         if(action == "ud"):
-            msg="You opened the door"
             msg="The door is now open."
             self.textToSpeech(msg)
         elif(action == "udnk"):
@@ -79,7 +74,6 @@ class FrameSlot:
 
     def Break(self, action):
         if(action == "bd"):
-            msg="You opened the door"
             msg="The door is open now"
             self.textToSpeech(msg)
         elif(action == "bdnk"):

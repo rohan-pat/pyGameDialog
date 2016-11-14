@@ -26,20 +26,20 @@ class Button(pygame.sprite.Sprite):
         if(action=="pk" or key1==0):
             key1=0
             if self.rect.collidepoint(350, 325) :
-                print("key picked up")
+                #print("key picked up")
                 self.kill()
         if(action=="ph"or hammer==0):
             hammer1=0
             if self.rect.collidepoint(650, 325) :
-                print("hammer picked up")
+                #print("hammer picked up")
                 self.kill()
         if(action=="ud" or action=="bd"):
-            print("outer loop")
+            #print("outer loop")
 
             if self.rect.collidepoint(450, 80) :
-                print("inner loop")
+                #print("inner loop")
                 self.door=1
-                print("closed door is hidden")
+                #print("closed door is hidden")
                 self.kill()
 
         return key1,hammer1,door1
@@ -93,14 +93,14 @@ class Image:
 
             self.screen.blit(self.imaged,(200,50))
             if(action=="ud" or action=="bd" or self.door==0):
-                print("open door is displayed")
+                #print("open door is displayed")
                 self.screen.blit(self.imagedooropen,(450,80))
             if(action=="rk" or self.key==1):
-                print("key is dropped")
+                #print("key is dropped")
                 self.key=1
                 self.screen.blit(self.image,(350,325))
             if(action=="rh" or self.hammer==1):
-                print("hammer is dropped")
+                #print("hammer is dropped")
                 self.hammer=1
                 self.screen.blit(self.imagehammer,(650,325))
             self.buttons.update(action,self.key,self.hammer,self.door)
@@ -113,7 +113,7 @@ class Image:
         img = Image()
         while True:
             action = buff.get()
-            print(action)
+            #print(action)
             img.imagemov(action)
 
 if __name__ == "__main__":

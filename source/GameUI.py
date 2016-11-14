@@ -1,8 +1,5 @@
 import pygame
-from multiprocessing import Queue
-import time
-import threading
-#pygame.init()
+pygame.init()
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, pos, size=(32, 32), image=None):
@@ -16,8 +13,8 @@ class Button(pygame.sprite.Sprite):
             self.rect = image.get_rect(topleft=pos)
         self.pressed = False
 
-    def update(self, action):
-        #action="bd"
+    def update(self):
+        action="bd"
         #mouse_pos = pygame.mouse.get_pos()
         #mouse_clicked = pygame.mouse.get_pressed()[0]
 
@@ -30,14 +27,10 @@ class Button(pygame.sprite.Sprite):
         if(action=="ud" or action=="bd"):
             if self.rect.collidepoint(450, 80) :
                 self.kill()
-
-class Image:
-    def __init__(self):
-        pygame.init()
-
-    def imagemov(self, action):
-        #action="bd"
-        screen = pygame.display.set_mode((860,640))
+class Image(object):
+    def imagemov():
+        action="bd"
+        screen = pygame.display.set_mode((1280,720),pygame.FULLSCREEN)
         clock = pygame.time.Clock()
         imaged = pygame.image.load("Dungeon.jpg")
         imaged=pygame.transform.scale(imaged, (600,600))
@@ -71,7 +64,7 @@ class Image:
                         #buttons.add(Button(pos=(650, 325), image=imagehammer))
 
             #buttons.add(Button(pos=(450, 80), image=imagedooropen))
-            buttons.update(action)  # Calls the update method on every sprite in the group.
+            buttons.update()  # Calls the update method on every sprite in the group.
 
             #screen.fill((255, 255, 255))
             buttons.draw(screen)  # Draws  all sprites to the given Surface.
@@ -83,26 +76,6 @@ class Image:
                 screen.blit(image,(350,325))
             if(action=="rh"):
                 screen.blit(imagehammer,(650,325))
-            break
-
-    def start_thread(buff):
-        img = Image()
-        while True:
-            action = buff.get()
-            img.imagemov(action)
-
-if __name__ == "__main__":
-    buff = Queue()
-    buff.put("pka")
-
-    gameThread = threading.Thread(
-    target=Image.start_thread, args=(buff,))
-    gameThread.start()
-
-    time.sleep(3)
-    buff.put("ph")
-    time.sleep(3)
-    buff.put("ud")
-    time.sleep(3)
-    buff.put("pk")
-    buff.join()
+def main():
+    Image.imagemov()
+if __name__ == "__main__": main()

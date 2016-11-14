@@ -2,7 +2,7 @@
 import json
 from watson_developer_cloud import ConversationV1
 
-class langClassifier:
+class langClassifier():
     """This module takes text as input and returns intent, confidence, entity, value."""
 
     def __init__(self):
@@ -38,8 +38,7 @@ class langClassifier:
         )
 
         intentDict = response['intents'][0]
-        
-        if(response['entities'] != []):
+        if(response['entities'][0] != []):
             entityDict = response['entities'][0]
             entity = entityDict['entity']
             value = entityDict['value']
@@ -48,8 +47,8 @@ class langClassifier:
 
         # check if alternate intent is actually required.
         alternateIntent = response['alternate_intents']
-        #print(intentDict)
-        #print(entityDict)
+        print(intentDict)
+        print(entityDict)
 
         intent = intentDict['intent']
         confidence = intentDict['confidence']

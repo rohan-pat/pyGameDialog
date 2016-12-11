@@ -4,6 +4,7 @@ from LanguageClassifier import langClassifier
 from GameUI import start_thread
 
 import threading
+import time
 from multiprocessing import Queue
 
 class DialogManager:
@@ -21,6 +22,7 @@ class DialogManager:
         self.gameThread = threading.Thread(
         target=start_thread, args=(self.buff,))
         self.gameThread.start()
+        self.buff.put("test")
 
     def dialogManager(self):
         count = 0

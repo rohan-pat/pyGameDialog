@@ -1,4 +1,6 @@
 """Sample that streams audio to the Google Cloud Speech API via GRPC."""
+# to do list:-
+# 1. make init function and move service and cloud context object there.
 
 from __future__ import division
 
@@ -8,36 +10,36 @@ import re
 import signal
 import sys
 
-from datetime import datetime
 from google.cloud import credentials
 from google.cloud.speech.v1beta1 import cloud_speech_pb2 as cloud_speech
 from google.rpc import code_pb2
 from grpc.beta import implementations
-from grpc.framework.interfaces.face import face
+from oauth2client.client import GoogleCredentials
 import pyaudio
 from six.moves import queue
 
 # Audio recording parameters
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
-
 DEADLINE_SECS = 60 * 3 + 5
-SPEECH_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 
-TEXT = []
-BREAK = False
+# google speech recongition parameters.
+ALTERNATIVES = 10
 
 def make_channel(host, port):
     """Creates an SSL channel with auth credentials from the environment."""
+    # In order to make an https call, use an ssl channel with defaults
     ssl_channel = implementations.ssl_channel_credentials(None, None, None)
 
-    creds = credentials.get_credentials().create_scoped([SPEECH_SCOPE])
+    creds = GoogleCredentials.get_application_default()
+
     auth_header = (
         'Authorization',
         'Bearer ' + creds.get_access_token().access_token)
+
     auth_plugin = implementations.metadata_call_credentials(
         lambda _, cb: cb([auth_header], None),
-        name='application_default_credentials')
+        name='google-speech-creds')
 
     # compose the two together for both ssl and google auth
     composite_channel = implementations.composite_channel_credentials(
@@ -75,22 +77,17 @@ def _audio_data_generator(buff):
 
         yield b''.join(data)
 
+
 def _fill_buffer(buff, in_data, frame_count, time_info, status_flags):
-    """ Continously read audio and add to the buffer.
-        Start recording if the audio stream is not silent, stop recording
-        if the audio stream is silent for
-    """
-    #print("fill buffer started")
+    """Continuously collect data from the audio stream, into the buffer."""
     buff.put(in_data)
     return None, pyaudio.paContinue
 
+
 # [START audio_stream]
 @contextlib.contextmanager
-def record_audio(rate, chunk):
+def record_audio(rate, chunk, buff):
     """Opens a recording stream in a context manager."""
-    # Create a thread-safe buffer of audio data
-    buff = queue.Queue()
-
     audio_interface = pyaudio.PyAudio()
     audio_stream = audio_interface.open(
         format=pyaudio.paInt16,
@@ -103,8 +100,7 @@ def record_audio(rate, chunk):
 
     audio_stream.stop_stream()
     audio_stream.close()
-    # Signal the _audio_data_generator to finish
-    buff.put(None)
+
     audio_interface.terminate()
 # [END audio_stream]
 
@@ -119,15 +115,27 @@ def request_stream(data_stream, rate, interim_results=False):
         interim_results: Whether to return intermediate results, before the
             transcription is finalized.
     """
+    # first send the config request.
+    # adding context hints.
+    phrases = {"pick", "up", "key", "sword", "hammer", "lamp", "lantern", "light",
+                "get the key", "take the key", "drop the sword", "kill the dragon"}
+    context = cloud_speech.SpeechContext()
+    print("type of context phrases is ", context.phrases)
+
+    for item in phrases:
+        context.phrases.append(item)
+    print("type of context phrases is ", context.phrases)
+
     recognition_config = cloud_speech.RecognitionConfig(
         encoding='LINEAR16',  # raw 16-bit signed LE samples
         sample_rate=rate,  # the rate in hertz
-        # See http://g.co/cloud/speech/docs/languages
-        # for a list of supported languages.
         language_code='en-US',  # a BCP-47 language tag
+        max_alternatives=ALTERNATIVES,
+        speech_context=context,
     )
     streaming_config = cloud_speech.StreamingRecognitionConfig(
         interim_results=interim_results,
+        single_utterance=True,
         config=recognition_config,
     )
 
@@ -135,67 +143,63 @@ def request_stream(data_stream, rate, interim_results=False):
         streaming_config=streaming_config)
 
     for data in data_stream:
-        # Subsequent requests can all just have the content
         yield cloud_speech.StreamingRecognizeRequest(audio_content=data)
 
 
-def listen_print_loop(recognize_stream, sentence):
+def process_transcript(recognize_stream, buff):
     """Iterates through server responses and prints them.
 
     The recognize_stream passed is a generator that will block until a response
     is provided by the server. When the transcription response comes, print it.
-
-    In this case, responses are provided for interim results as well. If the
-    response is an interim one, print a line feed at the end of it, to allow
-    the next result to overwrite it, until the response is a final one. For the
-    final one, print a newline to preserve the finalized transcription.
     """
-    t1 = datetime.now()
-    word_count = 0
-    global TEXT
-
-    signal.signal(signal.SIGALRM, returnText)
-    signal.alarm(6)
+    end_of_utterance = False
 
     for resp in recognize_stream:
-        print("Inside record")
-
         if resp.error.code != code_pb2.OK:
             raise RuntimeError('Server error: ' + resp.error.message)
 
+        if resp.endpointer_type == resp.START_OF_SPEECH:
+            print("start of speech recording")
+
         if not resp.results:
+            if resp.endpointer_type == resp.END_OF_UTTERANCE:
+                end_of_utterance = True
             continue
 
         # Display the top transcription
+        print("before result")
+
         result = resp.results[0]
-        sentence.append(result.alternatives[0].transcript)
-        TEXT = sentence
-        word_count = word_count + 1
+        i = 0
+        for res in result.alternatives:
+            print(i,". text is", res.transcript, end=",")
+            print("confidence is", res.confidence)
+            i = i + 1
 
-def getSpeechText():
-    global TEXT
-    TEXT = ""
-    with cloud_speech.beta_create_Speech_stub(
-            make_channel('speech.googleapis.com', 443)) as service:
-        with record_audio(RATE, CHUNK) as buffered_audio_data:
-            requests = request_stream(buffered_audio_data, RATE)
-            recognize_stream = service.StreamingRecognize(
-                requests, DEADLINE_SECS)
+        if end_of_utterance:
+            buff.put(None)
+            break;
 
-            # Exit things cleanly on interrupt
-            signal.signal(signal.SIGINT, lambda *_: recognize_stream.cancel())
+def main():
+    service = cloud_speech.beta_create_Speech_stub(
+                make_channel('speech.googleapis.com', 443))
+    buff = queue.Queue()
+    with record_audio(RATE, CHUNK, buff) as buffered_audio_data:
+        requests = request_stream(buffered_audio_data, RATE)
+        recognize_stream = service.StreamingRecognize(
+            requests, DEADLINE_SECS)
 
-            # Now, put the transcription responses to use.
-            try:
-                sentence = []
-                listen_print_loop(recognize_stream, sentence)
-                recognize_stream.cancel()
-            except Exception:
-                recognize_stream.cancel()
-                return ''.join(TEXT)
+        # Exit things cleanly on interrupt
+        signal.signal(signal.SIGINT, lambda *_: recognize_stream.cancel())
 
-def returnText(signum, stack):
-    raise Exception
+        # Now, put the transcription responses to use.
+        try:
+            process_transcript(recognize_stream, buff)
+            recognize_stream.cancel()
+        except Exception as err:
+            recognize_stream.cancel()
+            print("Error occured!".format(err))
+            pass
 
 if __name__ == '__main__':
-    print(getSpeechText())
+    main()

@@ -4,6 +4,7 @@ from multiprocessing import Queue
 import time
 import threading
 import random
+from os.path import abspath, expanduser
 
 
 
@@ -14,32 +15,33 @@ class Image:
         #self.clock = pygame.time.Clock()
 
         # display window properties.
+        filepath = abspath(expanduser("~/") + "/Documents/Studies/NLP/Project/pyGameDialog/images/")
         display_width = 1265
         display_height= 550
         self.gameDisplay = pygame.display.set_mode((display_width, display_height))
         #pygame.display.set_caption("Find The Treasure")
-        self.imageBackground= pygame.image.load("backwithdialog.png")
+        self.imageBackground= pygame.image.load(filepath+"/backWithDialog.png")
         self.imageBackground=pygame.transform.scale(self.imageBackground, (1265,550))
-        self.herodown=pygame.image.load("herodown.png")
+        self.herodown=pygame.image.load(filepath+"/herodown.png")
         self.herodown=pygame.transform.scale(self.herodown, (40,40))
-        self.lightoff= pygame.image.load("lightcauldronoff.png")
-        self.lighton= pygame.image.load("lightcauldronon.png")
-        self.kapow= pygame.image.load("kapow.png")
+        self.lightoff= pygame.image.load(filepath+"/lightcauldronoff.png")
+        self.lighton= pygame.image.load(filepath+"/lightcauldronon.png")
+        self.kapow= pygame.image.load(filepath+"/kapow.png")
         self.kapow=pygame.transform.scale(self.kapow, (60,50))
-        self.ctreasure=pygame.image.load("ctreasure.png")
-        self.rockwithoutsword= pygame.image.load("rockwithoutsword.png")
-        self.swordrock=pygame.image.load("swordrock.png")
+        self.ctreasure=pygame.image.load(filepath+"/closedTreasure.png")
+        self.rockwithoutsword= pygame.image.load(filepath+"/rockwithoutsword.png")
+        self.swordrock=pygame.image.load(filepath+"/swordRock.png")
         self.swordrock=pygame.transform.scale(self.swordrock, (79,73))
-        self.armor=pygame.image.load("armor1.png")
+        self.armor=pygame.image.load(filepath+"/armor1.png")
         self.armor=pygame.transform.scale(self.armor, (79,73))
-        self.dragon=pygame.image.load("dragon.png")
-        self.dragonback=pygame.image.load("dragonback.png")
-        self.dragonbackback=pygame.image.load("dragonbackback.png")
-        self.dragonbackfront=pygame.image.load("dragonbackfront.png")
-        self.hammer=pygame.image.load("hammer.png")
+        self.dragon=pygame.image.load(filepath+"/dragon.png")
+        self.dragonback=pygame.image.load(filepath+"/dragon.png")
+        self.dragonbackback=pygame.image.load(filepath+"/dragonCry1.png")
+        self.dragonbackfront=pygame.image.load(filepath+"/dragonCry2.png")
+        self.hammer=pygame.image.load(filepath+"/hammer.png")
         self.hammer=pygame.transform.scale(self.hammer,(100,100))
-        self.key=pygame.image.load("key5.png")
-        self.scratchwall=pygame.image.load("scratchwall.png")
+        self.key=pygame.image.load(filepath+"/key5.png")
+        self.scratchwall=pygame.image.load(filepath+"/scratchwall.png")
         self.scratchwall=pygame.transform.scale(self.scratchwall,(62,71))
     def displayObject(self, image, x, y):
         """This method is used to load the image on the screen."""

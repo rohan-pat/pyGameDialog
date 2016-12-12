@@ -15,9 +15,9 @@ class GameInstance:
         self.clock = pygame.time.Clock()
 
         # display window properties.
-        display_width = 800
-        display_height = 600
-        self.gameDisplay = pygame.display.set_mode((display_width, display_height))
+        self.display_width = 1265
+        self.display_height = 550
+        self.gameDisplay = pygame.display.set_mode((self.display_width, self.display_height))
         pygame.display.set_caption("Find The Treasure")
 
         # colors for the same.
@@ -26,6 +26,10 @@ class GameInstance:
 
         # game images.
         filepath = abspath(expanduser("~/") + "/Documents/Studies/NLP/Project/pyGameDialog/images/")
+
+        # background image.
+        self.background = pygame.image.load(filepath+"/backWithDialog.png")
+        self.background = pygame.transform.scale(self.background, (self.display_width, self.display_height))
 
         # avatar images.
         self.avatar = pygame.image.load(filepath+"/herodown.png")
@@ -51,7 +55,7 @@ class GameInstance:
         self.x_image = 0
         self.y_image = 0
 
-        # hammar image.
+        # dragon image.
         self.dragon = pygame.image.load(filepath+"/dragon.png")
         self.dragonc1 = pygame.image.load(filepath+"/dragonCry1.png")
         self.dragonc2 = pygame.image.load(filepath+"/dragonCry2.png")
@@ -60,6 +64,10 @@ class GameInstance:
         self.dragon_x = 700;
         self.dragon_y = 300;
         self.dragon_move = False
+
+        # text positions.
+        self.text_position_x = 1000
+        self.text_position_y = 10
 
         # custom user events for controlling the game.
         self.player_movement = pygame.USEREVENT + 1
@@ -172,17 +180,18 @@ class GameInstance:
         else:
             print("Dragon movement complete")
             self.dragon_move = True
+            pygame.time.set_timer(self.dragon_movement, 0)
 
     # text related function.
     def text_objects(self, text, font):
-        textSurface = font.render(text, True, black)
+        textSurface = font.render(text, True, self.white)
         return textSurface, textSurface.get_rect()
 
     def message_display(self, text):
-        largeText = pygame.font.Font('freesansbold.ttf',115)
-        TextSurf, TextRect = text_objects(text, largeText)
-        TextRect.center = ((display_width/2),(display_height/2))
-        gameDisplay.blit(TextSurf, TextRect)
+        largeText = pygame.font.Font('freesansbold.ttf',16)
+        TextSurf, TextRect = self.text_objects(text, largeText)
+        TextRect.center = (self.text_position_x,self.text_position_y)
+        self.gameDisplay.blit(TextSurf, TextRect)
 
     def startGame(self):
         # setting the trigger for custom events.
@@ -197,6 +206,17 @@ class GameInstance:
             # clearing the game screen.
             # print("count is",count)
             self.gameDisplay.fill(self.black, rect=None)
+            self.displayObject(self.background, 0, 0)
+            self.text_position_x = 1000
+            self.text_position_y = 10
+            self.message_display("Hi, Welcome to Find")
+            self.text_position_x = 1000
+            self.text_position_y = 30
+            self.message_display(" The Treasure!")
+
+            self.text_position_x = 1200
+            self.text_position_y = 40
+            self.message_display("Thank you!")
 
             # main event handling loop.
             for event in pygame.event.get():
@@ -214,9 +234,6 @@ class GameInstance:
                 if event.type == self.dragon_movement:
                     print("Inside Dragon Movement")
                     self.move_dragon()
-                    print("inside player movement", self.player_move)
-                    if self.dragon_move:
-                        pygame.time.set_timer(self.dragon_movement, 0)
 
             # drawing objects on the screen.
             self.displayObject(self.avatar, self.avatar_pos_x, self.avatar_pos_y)

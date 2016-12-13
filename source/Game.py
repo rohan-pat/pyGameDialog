@@ -5,6 +5,7 @@ import threading
 import multiprocessing as mp
 import time
 from dialogMgr import startDialogManager
+import nltk
 
 class GameInstance:
     def __init__(self):
@@ -144,8 +145,11 @@ class GameInstance:
         self.treasure_display = 1
 
         # text positions.
-        self.text_position_x = 1000
-        self.text_position_y = 10
+        self.text_y1 = 0
+        self.text_y2 = 0
+        self.text_array = ""
+        self.red1 = pygame.image.load(filepath+"/red1.png")
+        self.red2 = pygame.image.load(filepath+"/red2.png")
 
         # custom user events for controlling the game.
         self.player_hammer_pick = pygame.USEREVENT + 1
@@ -167,6 +171,8 @@ class GameInstance:
         self.key_event_control = 1
         self.treasure_action = pygame.USEREVENT + 6
         self.treasure_control = 0
+        self.text_action = pygame.USEREVENT + 7
+        self.text_event_control = 1
 
     # image related functions.
     def displayObject(self, image, x, y):
@@ -277,17 +283,13 @@ class GameInstance:
             self.dragon_move = True
 
     # text related function.
-    def text_objects(self, text, font):
-        textSurface = font.render(text, True, self.white)
-        return textSurface, textSurface.get_rect()
+    def message_display(self, text, row_no):
+        self.text_y1 = 25 * row_no
+        label = self.myfont.render(text, 1, self.white)
+        print("y1, y2 = ", self.text_y1, self.text_y2)
+        self.gameDisplay.blit(label, (940, (30 + self.text_y1)))
 
-    def message_display(self, text):
-        largeText = pygame.font.Font('freesansbold.ttf',16)
-        TextSurf, TextRect = self.text_objects(text, largeText)
-        TextRect.center = (self.text_position_x,self.text_position_y)
-        self.gameDisplay.blit(TextSurf, TextRect)
-
-    def gameAction(self, selection):
+    def gameAction(self, selection, text_buff):
         # setting the trigger for custom events.
         #pygame.time.set_timer(self.player_hammer_pick, 250)
         print("start of gameAction")
@@ -300,17 +302,12 @@ class GameInstance:
         while not self.gameLoop:
             if selection == 1:
                 pygame.time.set_timer(self.player_hammer_pick, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 2:
                 pygame.time.set_timer(self.player_break_wall, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 3:
                 pygame.time.set_timer(self.player_switch_on, 300)
-                # self.lock.acquire()
                 selection = 0
                 # self.lock.release
             elif selection == 41:
@@ -322,37 +319,30 @@ class GameInstance:
             elif selection == 42:
                 self.knight_event_control = 2
                 pygame.time.set_timer(self.player_goto_knight, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 5:
                 pygame.time.set_timer(self.dragon_action, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 61:
                 self.key_event_control = 1
                 pygame.time.set_timer(self.key_action, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 62:
                 self.key_event_control = 2
                 pygame.time.set_timer(self.key_action, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
             elif selection == 7:
                 pygame.time.set_timer(self.treasure_action, 300)
-                # self.lock.acquire()
                 selection = 0
-                # self.lock.release
-            elif selection == 8:
-                # self.lock.acquire()
+            elif selection == 81:
                 selection = 0
-                # self.lock.release
-                # event for writing text to the field.
-                # how to get the text from the main program to this program.
+                self.text_event_control = 1
+                pygame.time.set_timer(self.text_action, 300)
+            elif selection == 82:
+                selection = 0
+                self.text_array = text_buff.get()
+                self.text_event_control = 2
+                pygame.time.set_timer(self.text_action, 300)
             elif selection == 9:
                 # end of game.
                 print("Selection 9, terminate the game")
@@ -364,18 +354,29 @@ class GameInstance:
             # clearing the game screen.
             # self.gameDisplay.fill(self.black, rect=None)
             self.displayObject(self.background, 0, 0)
-            self.text_position_x = 1100
-            self.text_position_y = 20
-            self.message_display("Hi, Welcome to Find")
-            self.text_position_x = 1000
-            self.text_position_y = 30
-            self.message_display(" The Treasure!")
 
-            self.text_position_x = 1200
-            self.text_position_y = 40
-            self.message_display("Thank you!")
-            label = self.myfont.render("Some text!", 1, self.white)
-            self.gameDisplay.blit(label, (1100, 70))
+            #if self.display_text:
+            word_list = nltk.word_tokenize(self.text_array)
+            word_count = 0
+            display_text = ""
+            row_count = 0
+            for word in word_list:
+                word_count = word_count + 1
+                display_text = display_text + " " + word
+                if word_count == 5:
+                    row_count = row_count + 1
+                    self.message_display(display_text, row_count)
+                    word_count = 0
+                    display_text = ""
+            if word_count > 0:
+                row_count = row_count + 1
+                self.message_display(display_text, row_count)
+                word_count = 0
+                display_text = ""
+            if self.text_event_control == 1:
+                self.displayObject(self.red1, 1030, 400)
+            elif self.text_event_control == 2:
+                self.displayObject(self.red2, 1030, 400)
 
             # main event handling loop.
             for event in pygame.event.get():
@@ -541,6 +542,10 @@ class GameInstance:
                         self.treasure_display = 2
                         self.treasure_control = 0
 
+                if event.type == self.text_action:
+                    pygame.time.set_timer(self.text_action, 0)
+                    self.gameLoop = True
+
             # drawing objects on the screen.
             if self.hammer_display:
                 self.displayObject(self.hammer, self.hammer_x, self.hammer_y)
@@ -589,47 +594,30 @@ class GameInstance:
         # pygame.quit()
         # quit()
 
-    # def eventTrigger(self, event_buff):
-    #     while True:
-    #         print("Before using get buffer")
-    #         # self.lock.acquire()
-    #         self.selection = event_buff.get()
-    #         # self.lock.release
-    #         print("Selection received is ",self.selection)
-    #
-    # # this process has to be invoked using a thread.
-    # def startGame(self, event_buff):
-    #     print("before process creation")
-    #     ctx = mp.get_context('spawn')
-    #     displayProcess = ctx.Process(target=self.gameAction)
-    #     print("start of display thread")
-    #     displayProcess.start()
-    #     print("start of event thread")
-    #     eventThread = threading.Thread(target=self.eventTrigger, args=(event_buff,))
-    #     eventThread.start()
-    #     # displayProcess.join()
-    #     # print("display process terminated")
-    #     # eventThread.join()
-    #     # print("event thread terminated")
-
-def start_game(buff):
+def start_game(buff, text_buff, buff2):
     g = GameInstance()
     while True:
         action = buff.get()
         print("action is", action)
-        g.gameAction(action)
+        g.gameAction(action, text_buff)
         print("returned from game action")
+        buff2.put(1)
 
-def control_thread(buff):
-    startDialogManager(buff)
+def control_thread(buff, text_buff,buff2):
+    print("In the control threadpython ")
+    startDialogManager(buff, text_buff, buff2)
 
 if __name__ == "__main__":
     print("queue created!")
     event_buff = mp.Queue()
     event_buff.put(10)
 
+    buff2 = mp.Queue()
+    # buff2.put(1)
+    text_buff = mp.Queue()
+
     # starting game thread.
-    gameThread = threading.Thread(target=control_thread, args=(event_buff,))
+    gameThread = threading.Thread(target=control_thread, args=(event_buff,text_buff,buff2,))
     gameThread.start()
 
-    start_game(event_buff)
+    start_game(event_buff, text_buff, buff2)

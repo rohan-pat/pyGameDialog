@@ -5,7 +5,7 @@ import time
 import threading
 import random
 from os.path import abspath, expanduser
-
+import nltk
 
 
 class Image:
@@ -13,6 +13,7 @@ class Image:
         pygame.init()
         gameLoop = False
         #self.clock = pygame.time.Clock()
+        self.myfont = pygame.font.SysFont("Helvetica", 30)
 
         # display window properties.
         filepath = abspath(expanduser("~/") + "/Documents/Studies/NLP/Project/pyGameDialog/images/")
@@ -43,6 +44,8 @@ class Image:
         self.key=pygame.image.load(filepath+"/key5.png")
         self.scratchwall=pygame.image.load(filepath+"/scratchwall.png")
         self.scratchwall=pygame.transform.scale(self.scratchwall,(62,71))
+        self.red1 = pygame.image.load(filepath+"/red1.png")
+        self.red2 = pygame.image.load(filepath+"/red2.png")
     def displayObject(self, image, x, y):
         """This method is used to load the image on the screen."""
         self.gameDisplay.blit(image, (x,y))
@@ -70,6 +73,32 @@ class Image:
             self.displayObject(self.lighton,640,60)
             self.displayObject(self.kapow,432,437)
             self.displayObject(self.kapow,540,220)
+            self.text_y1 = 0
+            self.text_y2 = 0
+            self.white = (255, 255, 255)
+            self.text_array = ["pick up the sword", "use the hammer to break the door", "kill the dragon"]
+            if True:
+                for item in self.text_array:
+                    word_list = nltk.word_tokenize(item)
+                    word_count = 0;
+                    display_text = ""
+                    for word in word_list:
+                        word_count = word_count + 1
+                        display_text = display_text + " " + word
+                        if word_count == 5:
+                            text = self.myfont.render(display_text, 1, self.white)
+                            self.gameDisplay.blit(text, (940, (30 + self.text_y1 + self.text_y2)))
+                            word_count = 0
+                            display_text = ""
+                            self.text_y1 = self.text_y1 + 25
+                    if word_count > 0:
+                        text = self.myfont.render(display_text, 1, self.white)
+                        self.gameDisplay.blit(text, (940, (30 + self.text_y1 + self.text_y2)))
+                        self.text_y1 = self.text_y1 + 25
+                        display_text = ""
+                        word_count = 0
+                    self.text_y2 = self.text_y2 + 10
+            self.displayObject(self.red2, 1030, 400)
             pygame.display.update()
 
         pygame.quit()

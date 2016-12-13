@@ -2,6 +2,8 @@ from SpeechRec import init_asr, startSpeechRec
 from languageClassifier import langClassifier
 import threading
 import multiprocessing as mp
+import sys
+import time
 
 # start of dialog manager function.
 
@@ -28,7 +30,7 @@ def lev_dist(source, target):
                         )
     return dist[-1][-1]
 
-def startDialogManager(buff):
+def startDialogManager(buff, text_buff, buff2):
     # initializing the asr.
     init_asr()
     # initializing the language classifier.
@@ -37,26 +39,40 @@ def startDialogManager(buff):
     count = 0
 
     while True:
+        temp = buff2.get()
         print("Start of recording")
-        text = None
+        text = " "
+        buff.put(81)
+        speechLoop = True
+        result = None
+
         result = startSpeechRec()
-        i = 0
-        for res in result:
-            if i == 0:
-                text = res.transcript
-            print(i,". text is", res.transcript, end=",")
-            print("confidence is", res.confidence)
-            i = i + 1
+        try:
+            if not result:
+                speechLoop = False
+            i = 0
+            for res in result:
+                if i == 0:
+                    text = res.transcript
+                print(i,". text is", res.transcript, end=",")
+                print("confidence is", res.confidence)
+                i = i + 1
+        except Exception:
+            print("Error Occurred")
+
+        text_buff.put(text)
+        buff.put(82)
 
         # getting the intents from watson.
         intent, value, confidence = l.getIntent(text)
         print("The value of intent, value, confidence is ", intent, value, confidence)
 
         count += 1
-        if count > 5:
+        if count > 2:
             break
 
     print("end of program")
+    buff.put(9)
 
 if __name__ == "__main__":
         buff = mp.Queue()

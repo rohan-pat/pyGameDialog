@@ -1,10 +1,5 @@
 class DialogManager:
     def __init__(self):
-        # self.fs=FrameSlot()
-        # self.w=watson()
-        # self.intent,self.entity=self.w.watsonspeech()
-        # print(self.intent)
-        # print(self.entity)
         self.keyState=0
         self.hammerState=1
         self.wallState=0

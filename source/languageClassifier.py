@@ -38,7 +38,7 @@ class langClassifier:
         )
 
         intentDict = response['intents'][0]
-        
+
         if(response['entities'] != []):
             entityDict = response['entities'][0]
             entity = entityDict['entity']
@@ -55,7 +55,7 @@ class langClassifier:
         confidence = intentDict['confidence']
 
         #print("intent is ", intent, "confidence is ", confidence)
-        return intent, value
+        return intent, value, confidence
 
 if __name__ == '__main__':
     test = langClassifier();

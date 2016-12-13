@@ -4,6 +4,7 @@ from os.path import abspath, expanduser
 import threading
 import multiprocessing as mp
 import time
+from dialogMgr import startDialogManager
 
 class GameInstance:
     def __init__(self):
@@ -620,31 +621,7 @@ def start_game(buff):
         print("returned from game action")
 
 def control_thread(buff):
-    print("waiting for event 1")
-    time.sleep(3)
-    buff.put(1)
-    print("waiting for event 2")
-    time.sleep(3)
-    buff.put(2)
-    time.sleep(3)
-    buff.put(3)
-    time.sleep(3)
-    buff.put(41)
-    time.sleep(3)
-    buff.put(42)
-    time.sleep(3)
-    buff.put(5)
-    time.sleep(3)
-    buff.put(61)
-    time.sleep(3)
-    buff.put(62)
-    time.sleep(3)
-    buff.put(7)
-    time.sleep(3)
-    buff.put(8)
-    print("waiting for event 9")
-    time.sleep(3)
-    buff.put(9)
+    startDialogManager(buff)
 
 if __name__ == "__main__":
     print("queue created!")

@@ -9,14 +9,14 @@ class langClassifier:
         """initialise the watson conversation service."""
         # initializing with the watson conversation object.
         self.conversation = ConversationV1(
-            username='8f3bdb08-ce20-4ec8-ad91-886ac6648319',
-            password='67yc28TWbL5J',
+            username= '547fd89f-253c-491c-bfc2-fc4b476c3a80',
+            password='WKC2HheXa6Rt',
             version='2016-09-20')
 
         # define a blank context file.
         self.context = {}
         # workspace id to access.
-        self.workspace_id = '09f71121-d51e-4eb2-8d0d-73fb7ba82774'
+        self.workspace_id = 'bded73c0-7714-4802-9205-a3617a5a265f'
 
     def getIntent(self, text):
         """ This method calls the watson conversation service.

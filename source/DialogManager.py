@@ -34,6 +34,8 @@ class DialogManager:
             self.goodbye()
         elif(intent=="greeting"):
             self.greeting()
+        elif(intent=="What")
+            self.what()
 
     def possession(self,entity) :
         if(entity=="key"):
@@ -43,6 +45,8 @@ class DialogManager:
             self.hammer()
         elif(entity=="weapon"):
             self.weapon()
+        elif(entity=="armor"):
+            self.armor()
         else:
             self.pundefined()
 
@@ -84,11 +88,20 @@ class DialogManager:
         else:
             self.usundefined()
 
+    def What(self):
+        if(self.hammerState==1)
+            if(self.wallState==1)
+                self.wlight()
+
+
     def movement(self):
         self.move()
 
     def light(self):
         self.lights()
+
+    def armor(self):
+        self.armorSuit()
 
     def undefined(self):
         self.unundefined()
@@ -113,17 +126,17 @@ class DialogManager:
         entity = "hammer"
         if(self.hammerState==0):
             self.hammerState=1
-            self.action="PickUp"
+            self.action="pickUpHammer"
             self.fs.frameSlot(self.action,self.entity)
         elif(self.hammerState==1):
             self.value="pickedUpAlready"
             self.fs.frameSlot(self.action,self.entity)
 
     def weapon(self):
-        enitiy = "sword"
+        entity = "sword"
         if(self.swordState==0):
             self.swordState=1
-            self.action="PickUp"
+            self.action="PickUpSword"
             self.fs.frameSlot(self.action,entity)
         elif(self.swordState==1):
             self.value="pickedUpAlready"
@@ -160,7 +173,14 @@ class DialogManager:
             self.action="dragonAlreadyKilled"
             self.fs.frameSlot(self.action,entity)
         else:
-            self.action = "donotPossess"
+            self.action = "noKillDragon"
+            self.fs.frameSlot(self.action,entity)
+
+    def armorSuit(self):
+        entity="sword"
+        if(self.swordState==0):
+            self.swordState=1
+            self.action="PickUpSword
             self.fs.frameSlot(self.action,entity)
 
     def ukill(self):
@@ -173,7 +193,7 @@ class DialogManager:
             self.action="treasueUnlocked"
             self.fs.frameSlot(self.action,self.entity)
         else:
-            self.action="donotPossess"
+            self.action="donotPossessKey"
             self.fs.frameSlot(self.action,entity)
 
     def uundefined(self):
@@ -260,6 +280,10 @@ class DialogManager:
 
     def lights(self):
         self.action="lightsOn"
+        self.fs.frameSlot(self.action,self.entity)
+
+    def wlight(Self):
+        self.action="lightHint"
         self.fs.frameSlot(self.action,self.entity)
 
     def unundefined(self):

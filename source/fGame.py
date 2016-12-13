@@ -55,7 +55,7 @@ class Image:
                     gameLoop = True
 
             self.gameDisplay.blit(self.imageBackground,(0,0))
-            self.displayObject(self.herodown,380,490)
+            self.displayObject(self.herodown,320,490)
             self.displayObject(self.hammer,440,485)
             self.displayObject(self.scratchwall,432,427)
             self.displayObject(self.armor,420,40)

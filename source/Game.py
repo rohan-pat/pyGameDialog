@@ -1,11 +1,9 @@
 import pygame
 from pygame.locals import *
 from os.path import abspath, expanduser
-
-class AvatarData:
-    def __init__(self):
-        self.avatar_xm = pygame.image.load()
-        self.avatar_x1 = pygame.image.load()
+import threading
+import multiprocessing as mp
+import time
 
 class GameInstance:
     def __init__(self):
@@ -16,6 +14,7 @@ class GameInstance:
 
         # setting clock for the game.
         self.clock = pygame.time.Clock()
+        self.gameLoop = False
 
         # display window properties.
         self.display_width = 1265
@@ -287,18 +286,82 @@ class GameInstance:
         TextRect.center = (self.text_position_x,self.text_position_y)
         self.gameDisplay.blit(TextSurf, TextRect)
 
-    def startGame(self):
+    def gameAction(self, selection):
         # setting the trigger for custom events.
-        pygame.time.set_timer(self.player_hammer_pick, 250)
-
+        #pygame.time.set_timer(self.player_hammer_pick, 250)
+        print("start of gameAction")
         count = 0
-        gameLoop = False
         alternate = 0
+        self.gameLoop = False
+        print("selection is", selection)
 
         # setting the main event control loop.
-        while not gameLoop:
+        while not self.gameLoop:
+            if selection == 1:
+                pygame.time.set_timer(self.player_hammer_pick, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 2:
+                pygame.time.set_timer(self.player_break_wall, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 3:
+                pygame.time.set_timer(self.player_switch_on, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 41:
+                self.knight_event_control = 1
+                pygame.time.set_timer(self.player_goto_knight, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 42:
+                self.knight_event_control = 2
+                pygame.time.set_timer(self.player_goto_knight, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 5:
+                pygame.time.set_timer(self.dragon_action, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 61:
+                self.key_event_control = 1
+                pygame.time.set_timer(self.key_action, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 62:
+                self.key_event_control = 2
+                pygame.time.set_timer(self.key_action, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 7:
+                pygame.time.set_timer(self.treasure_action, 300)
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+            elif selection == 8:
+                # self.lock.acquire()
+                selection = 0
+                # self.lock.release
+                # event for writing text to the field.
+                # how to get the text from the main program to this program.
+            elif selection == 9:
+                # end of game.
+                print("Selection 9, terminate the game")
+                pygame.quit()
+                quit()
+            elif selection == 10:
+                self.gameLoop = True
+
             # clearing the game screen.
-            self.gameDisplay.fill(self.black, rect=None)
+            # self.gameDisplay.fill(self.black, rect=None)
             self.displayObject(self.background, 0, 0)
             self.text_position_x = 1100
             self.text_position_y = 20
@@ -317,7 +380,8 @@ class GameInstance:
             for event in pygame.event.get():
                 print(event)
                 if event.type == pygame.QUIT:
-                    gameLoop = True
+                    pass
+                    # game ends when selection 9 is passed.
 
                 # hammer pick up.
                 if event.type == self.player_hammer_pick:
@@ -332,9 +396,10 @@ class GameInstance:
                     if self.player_move:
                         #print("player movement complete.")
                         pygame.time.set_timer(self.player_hammer_pick, 0)
+                        self.gameLoop = True
                         self.hammer_display = False
                         self.control_hammer = True
-                        pygame.time.set_timer(self.player_break_wall, 300)
+                        # pygame.time.set_timer(self.player_break_wall, 300)
 
                 # if event.type == self.player_hammer_drop:
                 #     self.hammer_display = True
@@ -357,10 +422,11 @@ class GameInstance:
                         self.kapow = self.kapow1
                         self.brokenWall_control = 3
                     elif self.brokenWall_control == 3:
+                        pygame.time.set_timer(self.player_break_wall, 0)
+                        self.gameLoop = True
                         self.brokenWall_control = 0
                         self.brokenWall_display = False
-                        pygame.time.set_timer(self.player_break_wall, 0)
-                        pygame.time.set_timer(self.player_switch_on, 300)
+                        # pygame.time.set_timer(self.player_switch_on, 300)
 
                 # switch on light.
                 if event.type == self.player_switch_on:
@@ -378,10 +444,11 @@ class GameInstance:
                         self.switch_display = 1
                         self.switch_control = 3
                     elif self.switch_control == 3:
+                        pygame.time.set_timer(self.player_switch_on, 0)
+                        self.gameLoop = True
                         self.switch_control = 0
                         self.darkroom_display = False
-                        pygame.time.set_timer(self.player_switch_on, 0)
-                        pygame.time.set_timer(self.player_goto_knight, 300)
+                        # pygame.time.set_timer(self.player_goto_knight, 300)
 
                 # go to the knight.
                 if event.type == self.player_goto_knight:
@@ -396,16 +463,16 @@ class GameInstance:
                             if self.player_move:
                                 self.goto_control = 2
                         elif self.goto_control == 2:
-                            # pygame.time.set_timer(self.player_goto_knight, 0)
+                            pygame.time.set_timer(self.player_goto_knight, 0)
+                            self.gameLoop = True
                             self.goto_control = 0
-                            self.knight_event_control = 2
                             # pygame.time.set_timer(self.player_get_sword, 300)
                     elif self.knight_event_control == 2:
                         pygame.time.set_timer(self.player_goto_knight, 0)
+                        self.gameLoop = True
                         self.rock_display = 1
                         self.avatar_right2 = self.avatar_right_sword
-                        self.knight_event_control = 1
-                        pygame.time.set_timer(self.dragon_action, 300)
+                        # pygame.time.set_timer(self.dragon_action, 300)
 
                 # pick up the sword.
                 # if event.type == self.player_get_sword:
@@ -440,18 +507,21 @@ class GameInstance:
                         self.move_dragon()
                         if self.dragon_move:
                             pygame.time.set_timer(self.dragon_action, 0)
+                            self.gameLoop = True
                             self.dragon_control = 0
                             self.key_display = True
                             self.key_event_control = 1
-                            pygame.time.set_timer(self.key_action, 300)
+                            # pygame.time.set_timer(self.key_action, 300)
 
                 if event.type == self.key_action:
                     if self.key_event_control == 1:
                         pygame.time.set_timer(self.key_action, 0)
+                        self.gameLoop = True
                         self.key_display = False
-                        pygame.time.set_timer(self.treasure_action, 300)
+                        # pygame.time.set_timer(self.treasure_action, 300)
                     elif self.key_event_control == 2:
                         pygame.time.set_timer(self.key_action, 0)
+                        self.gameLoop = True
                         self.key_display = True
 
                 if event.type == self.treasure_action:
@@ -466,6 +536,7 @@ class GameInstance:
                             self.treasure_control = 2
                     elif self.treasure_control == 2:
                         pygame.time.set_timer(self.key_action, 0)
+                        self.gameLoop = True
                         self.treasure_display = 2
                         self.treasure_control = 0
 
@@ -514,9 +585,74 @@ class GameInstance:
             self.clock.tick(60)
 
         # end of game.
-        pygame.quit()
-        quit()
+        # pygame.quit()
+        # quit()
+
+    # def eventTrigger(self, event_buff):
+    #     while True:
+    #         print("Before using get buffer")
+    #         # self.lock.acquire()
+    #         self.selection = event_buff.get()
+    #         # self.lock.release
+    #         print("Selection received is ",self.selection)
+    #
+    # # this process has to be invoked using a thread.
+    # def startGame(self, event_buff):
+    #     print("before process creation")
+    #     ctx = mp.get_context('spawn')
+    #     displayProcess = ctx.Process(target=self.gameAction)
+    #     print("start of display thread")
+    #     displayProcess.start()
+    #     print("start of event thread")
+    #     eventThread = threading.Thread(target=self.eventTrigger, args=(event_buff,))
+    #     eventThread.start()
+    #     # displayProcess.join()
+    #     # print("display process terminated")
+    #     # eventThread.join()
+    #     # print("event thread terminated")
+
+def start_game(buff):
+    g = GameInstance()
+    while True:
+        action = buff.get()
+        print("action is", action)
+        g.gameAction(action)
+        print("returned from game action")
+
+def control_thread(buff):
+    print("waiting for event 1")
+    time.sleep(3)
+    buff.put(1)
+    print("waiting for event 2")
+    time.sleep(3)
+    buff.put(2)
+    time.sleep(3)
+    buff.put(3)
+    time.sleep(3)
+    buff.put(41)
+    time.sleep(3)
+    buff.put(42)
+    time.sleep(3)
+    buff.put(5)
+    time.sleep(3)
+    buff.put(61)
+    time.sleep(3)
+    buff.put(62)
+    time.sleep(3)
+    buff.put(7)
+    time.sleep(3)
+    buff.put(8)
+    print("waiting for event 9")
+    time.sleep(3)
+    buff.put(9)
 
 if __name__ == "__main__":
-    g = GameInstance()
-    g.startGame()
+    print("queue created!")
+    event_buff = mp.Queue()
+    event_buff.put(10)
+
+    # starting game thread.
+    gameThread = threading.Thread(target=control_thread, args=(event_buff,))
+    gameThread.start()
+
+    start_game(event_buff)

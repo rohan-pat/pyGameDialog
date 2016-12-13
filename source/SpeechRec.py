@@ -22,6 +22,8 @@ from six.moves import queue
 RATE = 16000
 CHUNK = int(RATE / 10)  # 100ms
 DEADLINE_SECS = 60 * 3 + 5
+service = None
+context = None
 
 # google speech recongition parameters.
 ALTERNATIVES = 10
@@ -117,14 +119,14 @@ def request_stream(data_stream, rate, interim_results=False):
     """
     # first send the config request.
     # adding context hints.
-    phrases = {"pick", "up", "key", "sword", "hammer", "lamp", "lantern", "light",
-                "get the key", "take the key", "drop the sword", "kill the dragon"}
-    context = cloud_speech.SpeechContext()
-    print("type of context phrases is ", context.phrases)
-
-    for item in phrases:
-        context.phrases.append(item)
-    print("type of context phrases is ", context.phrases)
+    # phrases = {"pick", "up", "key", "sword", "hammer", "lamp", "lantern", "light",
+    #             "get the key", "take the key", "drop the sword", "kill the dragon"}
+    # context = cloud_speech.SpeechContext()
+    # print("type of context phrases is ", context.phrases)
+    # for item in phrases:
+    #     context.phrases.append(item)
+    # print("type of context phrases is ", context.phrases)
+    global context
 
     recognition_config = cloud_speech.RecognitionConfig(
         encoding='LINEAR16',  # raw 16-bit signed LE samples
@@ -163,6 +165,7 @@ def process_transcript(recognize_stream, buff):
 
         if not resp.results:
             if resp.endpointer_type == resp.END_OF_UTTERANCE:
+                print("end of utterance received.")
                 end_of_utterance = True
             continue
 
@@ -177,10 +180,21 @@ def process_transcript(recognize_stream, buff):
             i = i + 1
 
         if end_of_utterance:
+            print("terminating audio interface")
             buff.put(None)
             break;
 
-def main():
+def init_asr():
+    global context
+    context = cloud_speech.SpeechContext()
+    print("type of context phrases is ", context.phrases)
+    f = open("asr_context.txt", "r")
+    for line in f:
+        context.phrases.append(line)
+    f.close()
+    print("type of context phrases is ", context.phrases)
+
+def startSpeechRec():
     service = cloud_speech.beta_create_Speech_stub(
                 make_channel('speech.googleapis.com', 443))
     buff = queue.Queue()
@@ -202,4 +216,5 @@ def main():
             pass
 
 if __name__ == '__main__':
-    main()
+    init_asr()
+    startSpeechRec()

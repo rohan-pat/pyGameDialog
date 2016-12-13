@@ -9,8 +9,8 @@ class DialogManager:
         self.dragonState=0
         self.greetingSate=0
         self.goodbyeState=0
-    def manager(self,intent):
 
+    def manager(self,intent):
         if(intent=="possession"):
             self.possession(self.entity)
         elif(intent=="break"):
@@ -43,21 +43,25 @@ class DialogManager:
             self.weapon()
         else:
             self.pundefined()
+
     def breaks(self,enitiy):
         if(entity=="wall"):
             self.wall()
         else:
             self.bundefined()
+
     def kill(self,enitiy):
         if(entity=="dragon"):
             self.dragon()
         else:
             self.ukill()
+
     def unlock(self,entity):
         if(entity=="treasure"):
             self.treasure()
         else:
             self.uundefined()
+
     def release(self,entity):
         if(entity=="key"):
             self.rkey()
@@ -67,6 +71,7 @@ class DialogManager:
             self.rweapon()
         else:
             self.rundefined()
+
     def use(self,entity):
         if(entity=="key"):
             self.ukey()
@@ -76,6 +81,7 @@ class DialogManager:
             self.uweapon()
         else:
             self.usundefined()
+
     def movement(self):
         self.move()
     def light(self):
@@ -94,6 +100,7 @@ class DialogManager:
             fs.fsPossession(entity)
         elif(self.keyState==1):
             fs.fsAgainPossesion(entity)
+
     def hammer(self):
         entity="hammer"
         if(self.hammerSate==0):
@@ -101,6 +108,7 @@ class DialogManager:
             fs.fsPossession(entity)
         elif(self.hammerSate==1):
             fs.fsAgainPossesion(entity)
+
     def weapon(self):
         enitiy="sword"
         if(self.swordState==0):
@@ -108,6 +116,7 @@ class DialogManager:
             fs.fsPossession(entity)
         elif(self.swordState==1):
             fs.fsAgainPossesion(entity)
+
     def pundefined(self):
         fs.entityUndefined()
 
@@ -120,8 +129,10 @@ class DialogManager:
             fs.wallBroken()
         else:
             fs.donotPossess(entity)
+
     def bundefined(self):
         fs.entityUndefined()
+
     def dragon(self):
         entity="sword"
         if(self.swordState==1 and self. dragonState==0):
@@ -130,45 +141,52 @@ class DialogManager:
         elif(self.swordState==1 and self. dragonState==0):
             fs.dragonAlreadyKilled()
         else:
-
             fs.donotPossess(entity)
 
     def ukill(self):
         fs.entityUndefined()
+
     def treasure(self):
         entity="key"
         if(self.keyState==1):
             fs.unlockTreasure()
         else:
             fs.donotPossess(entity)
+
     def uundefined(self):
         fs.entityUndefined()
+
     def rkey(self):
         entity="key"
         if(self.keyState==1):
             fs.dropEntity(entity)
         elif(keyState==0):
             fs.donotPossess(entity)
+
     def rhammer(self):
         entiy="hammer"
         if(self.hammerState==1):
             fs.dropEntity(entity)
         elif(self.hammerState==0):
             fs.donotPossess(entity)
+
     def rweapon(self):
         entity="sword"
         if(self.swordState==1):
             fs.dropEntity(entity)
         elif(self.swordState==0):
             fs.donotPossess(entity)
+
     def rundefined(self):
         fs.entityUndefined()
+
     def ukey(self):
         entity="key"
         if(self.keyState==1):
             fs.unlockTreasure()
         elif(self.keyState==0):
             fs.donotPossess(entity)
+
     def uhammer(self):
         entity="hammer"
         if(self.hammerState==1 and self.wallState==0):
@@ -187,21 +205,26 @@ class DialogManager:
         elif(self.swordState==1 and self. dragonState==0):
             fs.dragonAlreadyKilled()
         else:
-
             fs.donotPossess(entity)
+
     def usundefined(self):
         fs.entityUndefined()
+
     def move(self):
         fs.illegalMove()
+
     def lights():
         fs.lightUp()
+
     def unundefined(self):
         fs.errorUndefined()
+
     def greetings(self):
         if(self.greetingSate==0):
             self.greetingSate=1
             fs.GreetingsInital()
         elif(self.greetingSate==1):
             fs.helloAgain()
+
     def goodbyes(self):
         fs.byeBye()

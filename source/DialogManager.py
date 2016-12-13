@@ -1,12 +1,10 @@
-from frameSlot import FrameSlot
-from trial import watson
 class DialogManager:
     def __init__(self):
-        self.fs=FrameSlot()
-        self.w=watson()
-        self.intent,self.entity=self.w.watsonspeech()
-        print(self.intent)
-        print(self.entity)
+        # self.fs=FrameSlot()
+        # self.w=watson()
+        # self.intent,self.entity=self.w.watsonspeech()
+        # print(self.intent)
+        # print(self.entity)
         self.keyState=0
         self.hammerState=1
         self.wallState=0
@@ -17,8 +15,8 @@ class DialogManager:
         self.goodbyeState=0
         self.value=" "
         #self.entity="key"
-    def manager(self,intent):
 
+    def manager(self,intent):
         if(intent=="possession"):
             self.possession(self.entity)
         elif(intent=="break"):
@@ -42,7 +40,7 @@ class DialogManager:
         elif(intent=="greeting"):
             self.greeting()
 
-    def  possession(self,entity) :
+    def possession(self,entity) :
         if(entity=="key"):
             print(entity)
             self.key()
@@ -107,7 +105,7 @@ class DialogManager:
         self.goodbyes()
 
     def key(self):
-        entity="key"
+        entity = "key"
         if(self.keyState==0):
             self.keyState=1
             self.action="PickUp"
@@ -117,7 +115,7 @@ class DialogManager:
             self.fs.frameSlot(self.action,self.entity)
 
     def hammer(self):
-        entity="hammer"
+        entity = "hammer"
         if(self.hammerState==0):
             self.hammerState=1
             self.action="PickUp"
@@ -127,7 +125,7 @@ class DialogManager:
             self.fs.frameSlot(self.action,self.entity)
 
     def weapon(self):
-        enitiy="sword"
+        enitiy = "sword"
         if(self.swordState==0):
             self.swordState=1
             self.action="PickUp"
@@ -137,11 +135,11 @@ class DialogManager:
             self.fs.frameSlot(self.action,entity)
 
     def pundefined(self):
-        self.action="entityUndefined"
+        self.action = "entityUndefined"
         self.fs.frameSlot(self.action,self.entity)
 
     def wall(self):
-        enitiy="hammer"
+        enitiy = "hammer"
         if(self.hammerState==1 and self.wallState==0):
             self.wallState=1
             self.action="wallBroke"
@@ -154,11 +152,11 @@ class DialogManager:
             self.fs.frameSlot(self.action,self.entity)
 
     def bundefined(self):
-        self.action="entityUndefined"
+        self.action = "entityUndefined"
         self.fs.frameSlot(self.action,self.entity)
 
     def dragon(self):
-        entity="sword"
+        entity = "sword"
         if(self.swordState==1 and self. dragonState==0):
             self.dragonState=1
             self.action="dragonKilled"
@@ -167,15 +165,15 @@ class DialogManager:
             self.action="dragonAlreadyKilled"
             self.fs.frameSlot(self.action,entity)
         else:
-            self.action="donotPossess"
+            self.action = "donotPossess"
             self.fs.frameSlot(self.action,entity)
 
     def ukill(self):
-        self.action="entityUndefined"
+        self.action = "entityUndefined"
         self.fs.frameSlot(self.action,self.entity)
 
     def treasure(self):
-        entity="key"
+        entity = "key"
         if(self.keyState==1):
             self.action="treasueUnlocked"
             self.fs.frameSlot(self.action,self.entity)
@@ -221,6 +219,7 @@ class DialogManager:
     def rundefined(self):
         self.action="entityUndefined"
         self.fs.frameSlot(self.action,self.entity)
+
     def ukey(self):
         entity="key"
         if(self.keyState==1):

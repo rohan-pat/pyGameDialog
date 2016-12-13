@@ -1,6 +1,4 @@
 """Sample that streams audio to the Google Cloud Speech API via GRPC."""
-# to do list:-
-# 1. make init function and move service and cloud context object there.
 
 from __future__ import division
 

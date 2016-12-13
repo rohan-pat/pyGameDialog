@@ -8,6 +8,7 @@ class DialogManager:
         self.dragonState=0
         self.greetingSate=0
         self.goodbyeState=0
+        self.answerState=0
         self.value=" "
         #self.entity="key"
 
@@ -34,8 +35,10 @@ class DialogManager:
             self.goodbye()
         elif(intent=="greeting"):
             self.greeting()
-        elif(intent=="What")
+        elif(intent=="What"):
             self.what()
+        elif(intent=="answer"):
+            self.answer()
 
     def possession(self,entity) :
         if(entity=="key"):
@@ -88,6 +91,12 @@ class DialogManager:
         else:
             self.usundefined()
 
+
+    def answer(self,entity):
+        if(entity=="five"):
+            self.answerState=0
+            self.correctAnswer()
+
     def What(self):
         if(self.hammerState==1)
             if(self.wallState==1)
@@ -136,6 +145,7 @@ class DialogManager:
         entity = "sword"
         if(self.swordState==0):
             self.swordState=1
+            self.answerState=1
             self.action="PickUpSword"
             self.fs.frameSlot(self.action,entity)
         elif(self.swordState==1):
@@ -180,6 +190,7 @@ class DialogManager:
         entity="sword"
         if(self.swordState==0):
             self.swordState=1
+            self.answerState=1
             self.action="PickUpSword
             self.fs.frameSlot(self.action,entity)
 
@@ -278,6 +289,10 @@ class DialogManager:
         self.action="illegalMove"
         self.fs.frameSlot(self.action,self.entity)
 
+    def correctAnswer(self):
+        self.action="correctAnswer"
+        self.fs.frameSlot(self.action,self.entity)
+
     def lights(self):
         self.action="lightsOn"
         self.fs.frameSlot(self.action,self.entity)
@@ -287,8 +302,12 @@ class DialogManager:
         self.fs.frameSlot(self.action,self.entity)
 
     def unundefined(self):
-        self.action="errorIntent"
-        self.fs.frameSlot(self.action,self.entity)
+        if(self.answerState==1):
+            self.action="wrongAnswer"
+            self.fs.frameSlot(self.action,self.entity)
+        else:
+            self.action="errorIntent"
+            self.fs.frameSlot(self.action,self.entity)
 
     def greetings(self):
         if(self.greetingSate==0):

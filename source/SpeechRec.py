@@ -173,16 +173,16 @@ def process_transcript(recognize_stream, buff):
         print("before result")
 
         result = resp.results[0]
-        i = 0
-        for res in result.alternatives:
-            print(i,". text is", res.transcript, end=",")
-            print("confidence is", res.confidence)
-            i = i + 1
+        # i = 0
+        # for res in result.alternatives:
+        #     print(i,". text is", res.transcript, end=",")
+        #     print("confidence is", res.confidence)
+        #     i = i + 1
 
         if end_of_utterance:
             print("terminating audio interface")
             buff.put(None)
-            break;
+            return result.alternatives
 
 def init_asr():
     global context
@@ -208,13 +208,41 @@ def startSpeechRec():
 
         # Now, put the transcription responses to use.
         try:
-            process_transcript(recognize_stream, buff)
+            return process_transcript(recognize_stream, buff)
             recognize_stream.cancel()
         except Exception as err:
             recognize_stream.cancel()
             print("Error occured!".format(err))
-            pass
+
+def lev_dist(source, target):
+    if source == target:
+        return 0
+
+    # Prepare a matrix
+    slen, tlen = len(source), len(target)
+    dist = [[0 for i in range(tlen+1)] for x in range(slen+1)]
+    for i in range(slen+1):
+        dist[i][0] = i
+    for j in range(tlen+1):
+        dist[0][j] = j
+
+    # Counting distance, here is my function
+    for i in range(slen):
+        for j in range(tlen):
+            cost = 0 if source[i] == target[j] else 1
+            dist[i+1][j+1] = min(
+                            dist[i][j+1] + 1,   # deletion
+                            dist[i+1][j] + 1,   # insertion
+                            dist[i][j] + cost   # substitution
+                        )
+    return dist[-1][-1]
 
 if __name__ == '__main__':
-    init_asr()
-    startSpeechRec()
+    # init_asr()
+    # result = startSpeechRec()
+    # i = 0
+    # for res in result:
+    #     print(i,". text is", res.transcript, end=",")
+    #     print("confidence is", res.confidence)
+    #     i = i + 1
+    print("lev distance is ", lev_dist("use the hammer", "use sword"))

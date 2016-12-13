@@ -1,16 +1,24 @@
+from frameSlot import FrameSlot
+from trial import watson
 class DialogManager:
     def __init__(self):
         self.fs=FrameSlot()
+        self.w=watson()
+        self.intent,self.entity=self.w.watsonspeech()
+        print(self.intent)
+        print(self.entity)
         self.keyState=0
-        self.hammerSate=0
+        self.hammerState=1
         self.wallState=0
-        self.swordState=0
+        self.swordState=1
         self.treasureState=0
         self.dragonState=0
         self.greetingSate=0
         self.goodbyeState=0
-
+        self.value=" "
+        #self.entity="key"
     def manager(self,intent):
+
         if(intent=="possession"):
             self.possession(self.entity)
         elif(intent=="break"):
@@ -20,7 +28,7 @@ class DialogManager:
         elif(intent=="unlock"):
             self.unlock(self.entity)
         elif(intent=="use"):
-            self.unlock(self.entity)
+            self.use(self.entity)
         elif(intent=="release"):
             self.release(self.entity)
         elif(intent=="movement"):
@@ -28,14 +36,15 @@ class DialogManager:
         elif(intent=="undefined"):
             self.undefined()
         elif(intent=="light"):
-            self.light(self.entity)
+            self.light()
         elif(intent=="goodbye"):
-            self.goodbye(self.entity)
+            self.goodbye()
         elif(intent=="greeting"):
-            self.greeting(self.entity)
+            self.greeting()
 
     def  possession(self,entity) :
         if(entity=="key"):
+            print(entity)
             self.key()
         elif(entity=="hammer"):
             self.hammer()
@@ -50,7 +59,7 @@ class DialogManager:
         else:
             self.bundefined()
 
-    def kill(self,enitiy):
+    def kill(self,entity):
         if(entity=="dragon"):
             self.dragon()
         else:
@@ -84,12 +93,16 @@ class DialogManager:
 
     def movement(self):
         self.move()
+
     def light(self):
         self.lights()
+
     def undefined(self):
         self.unundefined()
+
     def greeting(self):
         self.greetings()
+
     def goodbye(self):
         self.goodbyes()
 
@@ -97,134 +110,177 @@ class DialogManager:
         entity="key"
         if(self.keyState==0):
             self.keyState=1
-            fs.fsPossession(entity)
+            self.action="PickUp"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.keyState==1):
-            fs.fsAgainPossesion(entity)
+            self.value="pickedUpAlready"
+            self.fs.frameSlot(self.action,self.entity)
 
     def hammer(self):
         entity="hammer"
-        if(self.hammerSate==0):
-            self.hammerSate=1
-            fs.fsPossession(entity)
-        elif(self.hammerSate==1):
-            fs.fsAgainPossesion(entity)
+        if(self.hammerState==0):
+            self.hammerState=1
+            self.action="PickUp"
+            self.fs.frameSlot(self.action,self.entity)
+        elif(self.hammerState==1):
+            self.value="pickedUpAlready"
+            self.fs.frameSlot(self.action,self.entity)
 
     def weapon(self):
         enitiy="sword"
         if(self.swordState==0):
             self.swordState=1
-            fs.fsPossession(entity)
+            self.action="PickUp"
+            self.fs.frameSlot(self.action,entity)
         elif(self.swordState==1):
-            fs.fsAgainPossesion(entity)
+            self.value="pickedUpAlready"
+            self.fs.frameSlot(self.action,entity)
 
     def pundefined(self):
-        fs.entityUndefined()
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
 
     def wall(self):
         enitiy="hammer"
-        if(self.hammerSate==1 and self.wallState==0):
+        if(self.hammerState==1 and self.wallState==0):
             self.wallState=1
-            fs.breakWall()
-        elif(self.hammerSate==1 and self.wallState==1):
-            fs.wallBroken()
+            self.action="wallBroke"
+            self.fs.frameSlot(self.action,self.entity)
+        elif(self.hammerState==1 and self.wallState==1):
+            self.action="wallAlreadyBroke"
+            self.fs.frameSlot(self.action,self.entity)
         else:
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,self.entity)
 
     def bundefined(self):
-        fs.entityUndefined()
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
 
     def dragon(self):
         entity="sword"
         if(self.swordState==1 and self. dragonState==0):
             self.dragonState=1
-            fs.dragonKill()
+            self.action="dragonKilled"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.swordState==1 and self. dragonState==0):
-            fs.dragonAlreadyKilled()
+            self.action="dragonAlreadyKilled"
+            self.fs.frameSlot(self.action,entity)
         else:
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def ukill(self):
-        fs.entityUndefined()
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
 
     def treasure(self):
         entity="key"
         if(self.keyState==1):
-            fs.unlockTreasure()
+            self.action="treasueUnlocked"
+            self.fs.frameSlot(self.action,self.entity)
         else:
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def uundefined(self):
-        fs.entityUndefined()
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
 
     def rkey(self):
         entity="key"
         if(self.keyState==1):
-            fs.dropEntity(entity)
+            self.keyState=0
+            self.action="releaseEntity"
+            self.fs.frameSlot(self.action,self.entity)
         elif(keyState==0):
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def rhammer(self):
         entiy="hammer"
         if(self.hammerState==1):
-            fs.dropEntity(entity)
+            self.hammerState=0
+            self.action="releaseEntity"
+            self.fs.frameSlot(self.action,self.entity)
+            self.fs.dropEntity(entity)
         elif(self.hammerState==0):
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def rweapon(self):
         entity="sword"
         if(self.swordState==1):
-            fs.dropEntity(entity)
+            self.swordState=0
+            self.action="releaseEntity"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.swordState==0):
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def rundefined(self):
-        fs.entityUndefined()
-
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
     def ukey(self):
         entity="key"
         if(self.keyState==1):
-            fs.unlockTreasure()
+            self.action="treasueUnlocked"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.keyState==0):
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def uhammer(self):
         entity="hammer"
         if(self.hammerState==1 and self.wallState==0):
             self.wallState=1
-            fs.breakWall()
-        elif(self.hammerSate==1 and self.wallState==1):
-            fs.wallBroken()
+            self.action="wallBroke"
+            self.fs.frameSlot(self.action,self.entity)
+        elif(self.hammerState==1 and self.wallState==1):
+            self.action="wallAlreadyBroke"
+            self.fs.frameSlot(self.action,self.entity)
         else:
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,self.entity)
 
     def uweapon(self):
         entity="sword"
         if(self.swordState==1 and self. dragonState==0):
             self.dragonState=1
-            fs.dragonKill()
+            self.action="dragonKilled"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.swordState==1 and self. dragonState==0):
-            fs.dragonAlreadyKilled()
+            self.action="dragonAlreadyKilled"
+            self.fs.frameSlot(self.action,entity)
         else:
-            fs.donotPossess(entity)
+            self.action="donotPossess"
+            self.fs.frameSlot(self.action,entity)
 
     def usundefined(self):
-        fs.entityUndefined()
+        self.action="entityUndefined"
+        self.fs.frameSlot(self.action,self.entity)
 
     def move(self):
-        fs.illegalMove()
+        self.action="illegalMove"
+        self.fs.frameSlot(self.action,self.entity)
 
-    def lights():
-        fs.lightUp()
+    def lights(self):
+        self.action="lightsOn"
+        self.fs.frameSlot(self.action,self.entity)
 
     def unundefined(self):
-        fs.errorUndefined()
+        self.action="errorIntent"
+        self.fs.frameSlot(self.action,self.entity)
 
     def greetings(self):
         if(self.greetingSate==0):
             self.greetingSate=1
-            fs.GreetingsInital()
+            self.action="greetings"
+            self.fs.frameSlot(self.action,self.entity)
         elif(self.greetingSate==1):
-            fs.helloAgain()
+            elf.action="greetingsAgain"
+            self.fs.frameSlot(self.action,self.entity)
 
     def goodbyes(self):
-        fs.byeBye()
+        self.action="goodBye"
+        self.fs.frameSlot(self.action,self.entity)

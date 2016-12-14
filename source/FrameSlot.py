@@ -27,14 +27,26 @@ class FrameSlot:
         elif(action == "pickUpHammer"):
             self.msg="Good, now that you have the hammer, lets break the wall"
 
+        elif(action == "pickedUpAlready"):
+            self.msg = "You already have it."
+
         elif(action == "wallBroke"):
             self.msg = "Alright, that was good. Hope you got the hang of it.You should explore the castle but it seems to be pretty dark inside. What would you like to do?"
+
+        elif(action == "donotPossess"):
+            self.msg = "you do not have " + entity
+
+        elif(action == "wallAlreadyBroke"):
+            self.msg = "The wall is already broken"
 
         elif(action == "lightsOn"):
             self.msg="You have switched on the lights. The treasure is in the room, but unfortunately the key to unlock the treasure is guarded by the dragon"
 
         elif(action == "lightsAlreadyOn"):
             self.msg = "The lights are already on"
+
+        elif(action == "lightsOnWall"):
+            self.msg = "You cannot enter the castle until you break the wall."
 
         elif(action=="entityUndefined"):
             self.msg="I am sorry the object you specified could not be found in the castle. Please try again"
@@ -45,8 +57,14 @@ class FrameSlot:
         elif(action=="donotPossessKey"):
             self.msg="The key to the chest is guarded by the dragon"
 
+        elif(action == "dragonNoKey"):
+            self.msg = "You do not have the key"
+
         elif(action=="PickUpSword"):
             self.msg = "Who dares to enter my castle. You think you deserve this sword? If you are really worthy of it, you should be able to answer my question. The dialog system has 5 components. Yes or No?"
+
+        elif(action == "PickUpDarkSword"):
+            self.msg = "The room is dark. You cannot see anything"
 
         elif(action=="correctAnswer"):
             self.msg="You are correct. Here is your sword, go kill the dragon and claim your treasure"
@@ -68,9 +86,6 @@ class FrameSlot:
 
         elif(action == "treasureUnlocked"):
             self.msg="Well done, You have unlocked the treasure and you have succeeded in your quest"
-
-        elif(action == "donotPossessKey"):
-            self.msg="The key to the chest is guarded by the dragon"
 
         elif(action == "errorIntent"):
             self.msg="I could not get that. Could you say that again?";

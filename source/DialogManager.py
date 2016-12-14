@@ -33,8 +33,8 @@ class DialogManager:
             return self.unlock(entity)
         elif(intent=="use"):
             return self.use(entity)
-        # elif(intent=="release"):
-        #     self.release(entity)
+        elif(intent=="release"):
+            return self.release(entity)
         elif(intent=="movement"):
             return self.movement()
         elif(intent=="undefined"):
@@ -80,7 +80,7 @@ class DialogManager:
             return self.pundefined()
 
     def breaks(self,entity):
-        if(entity=="wall"):
+        if(entity=="wall" or entity == "hammer"):
             return self.wall()
         else:
             return self.bundefined()
@@ -119,11 +119,14 @@ class DialogManager:
 
     def answer(self,entity):
         if(entity=="Yes"):
-            self.answerState = 0
-            self.swordState = 1
-            self.action = "correctAnswer"
-            self.buff.put(42)
-            return self.fs.frameSlot(self.action,entity)
+            if self.answerState == 1:
+                self.answerState = 0
+                self.swordState = 1
+                self.action = "correctAnswer"
+                self.buff.put(42)
+                return self.fs.frameSlot(self.action,entity)
+            else:
+                return self.usundefined()
     #
     # def What(self):
     #     if(self.hammerState==1):
@@ -142,10 +145,10 @@ class DialogManager:
             self.action="illegalMove2"
             self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
-    #
-    # def armor(self):
-    #     self.armorSuit()
-    #
+
+    def armor(self):
+        return self.weapon()
+
     def undefined(self):
         entity = "empty"
         if(self.answerState == 1):
@@ -175,8 +178,8 @@ class DialogManager:
                 self.action="PickUp"
                 self.buff.put(61)
                 return self.fs.frameSlot(self.action,entity)
-        elif(self.keyState==1):
-            self.value="pickedUpAlready"
+        elif(self.keyState == 1):
+            self.action="pickedUpAlready"
             self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
 
@@ -197,19 +200,24 @@ class DialogManager:
     def weapon(self):
         entity = "sword"
         if(self.swordState==0):
-            self.swordState=1
-            self.answerState=1
-            self.action="PickUpSword"
-            self.buff.put(41)
+            if self.lightState == 0:
+                self.action="PickUpDarkSword"
+                self.buff2.put(1)
+                return self.fs.frameSlot(self.action,entity)
+            elif self.lightState == 1:
+                # self.swordState=1
+                self.answerState=1
+                self.action="PickUpSword"
+                self.buff.put(41)
             return self.fs.frameSlot(self.action,entity)
         elif(self.swordState==1):
             self.action="pickedUpAlready"
+            self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
 
-    # def pundefined(self):
-    #     self.action = "entityUndefined"
-    #     return self.fs.frameSlot(self.action,entity)
-    #
+    def pundefined(self):
+        return self.usundefined()
+
     def wall(self):
         entity = "hammer"
         if(self.hammerState==1 and self.wallState==0):
@@ -219,15 +227,16 @@ class DialogManager:
             return self.fs.frameSlot(self.action,entity)
         elif(self.hammerState==1 and self.wallState==1):
             self.action="wallAlreadyBroke"
+            self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
         else:
             self.action="donotPossess"
+            self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
-    #
-    # def bundefined(self):
-    #     self.action = "entityUndefined"
-    #     return self.fs.frameSlot(self.action,entity)
-    #
+
+    def bundefined(self):
+        return self.usundefined()
+
     def dragon(self):
         entity = "sword"
         if(self.swordState==1 and self. dragonState==0):
@@ -252,10 +261,9 @@ class DialogManager:
     #         self.action="PickUpSword"
     #         return self.fs.frameSlot(self.action,entity)
     #
-    # def ukill(self):
-    #     self.action = "entityUndefined"
-    #     return self.fs.frameSlot(self.action,entity)
-    #
+    def ukill(self):
+        return self.usundefined()
+
     def treasure(self):
         entity = "key"
         if(self.keyState==1):
@@ -263,50 +271,54 @@ class DialogManager:
             self.buff.put(7)
             return self.fs.frameSlot(self.action,entity)
         else:
-            self.action="donotPossessKey"
-            self.buff2.put(1)
-            return self.fs.frameSlot(self.action,entity)
+            if self.dragonState == 0:
+                self.action = "donotPossessKey"
+                self.buff2.put(1)
+                return self.fs.frameSlot(self.action,entity)
+            elif self.dragonState == 1:
+                self.action = "dragonNoKey"
+                self.buff2.put(1)
+                return self.fs.frameSlot(self.action,entity)
 
-    # def uundefined(self):
-    #     self.action="entityUndefined"
-    #     return self.fs.frameSlot(self.action,entity)
-    #
+    def uundefined(self):
+        return self.usundefined()
+
     def rkey(self):
         entity="key"
         if(self.keyState==1):
             self.action="releaseEntity"
             self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
-        elif(keyState==0):
+        elif(self.keyState==0):
             self.action="donotPossess"
             self.buff2.put(1)
             return self.fs.frameSlot(self.action,entity)
 
-    # def rhammer(self):
-    #     entiy="hammer"
-    #     if(self.hammerState==1):
-    #         self.hammerState=0
-    #         self.action="releaseEntity"
-    #         return self.fs.frameSlot(self.action,entity)
-    #         self.fs.dropEntity(entity)
-    #     elif(self.hammerState==0):
-    #         self.action="donotPossess"
-    #         return self.fs.frameSlot(self.action,entity)
-    #
-    # def rweapon(self):
-    #     entity="sword"
-    #     if(self.swordState==1):
-    #         self.swordState=0
-    #         self.action="releaseEntity"
-    #         return self.fs.frameSlot(self.action,entity)
-    #     elif(self.swordState==0):
-    #         self.action="donotPossess"
-    #         return self.fs.frameSlot(self.action,entity)
-    #
-    # def rundefined(self):
-    #     self.action="entityUndefined"
-    #     return self.fs.frameSlot(self.action,entity)
-    #
+    def rhammer(self):
+        entity="hammer"
+        if(self.hammerState==1):
+            self.action="releaseEntity"
+            self.buff2.put(1)
+            return self.fs.frameSlot(self.action,entity)
+        elif(self.hammerState==0):
+            self.action="donotPossess"
+            self.buff2.put(1)
+            return self.fs.frameSlot(self.action,entity)
+
+    def rweapon(self):
+        entity="sword"
+        if(self.swordState==1):
+            self.action="releaseEntity"
+            self.buff2.put(1)
+            return self.fs.frameSlot(self.action,entity)
+        elif(self.swordState==0):
+            self.action="donotPossess"
+            self.buff2.put(1)
+            return self.fs.frameSlot(self.action,entity)
+
+    def rundefined(self):
+        return self.usundefined()
+
     def ukey(self):
         return self.treasure()
 
@@ -325,10 +337,15 @@ class DialogManager:
     def lights(self):
         entity = "lights"
         if self.lightState == 0:
-            self.action="lightsOn"
-            self.buff.put(3)
-            self.lightState = 1
-            return self.fs.frameSlot(self.action,entity)
+            if self.wallState == 1:
+                self.action="lightsOn"
+                self.buff.put(3)
+                self.lightState = 1
+                return self.fs.frameSlot(self.action,entity)
+            elif self.wallState == 0:
+                self.action="lightsOnWall"
+                self.buff2.put(1)
+                return self.fs.frameSlot(self.action,entity)
         elif self.lightState == 1:
             self.action = "lightsAlreadyOn"
             self.buff2.put(1)

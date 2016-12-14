@@ -286,13 +286,11 @@ class GameInstance:
     def message_display(self, text, row_no):
         self.text_y1 = 25 * row_no
         label = self.myfont.render(text, 1, self.white)
-        print("y1, y2 = ", self.text_y1, self.text_y2)
         self.gameDisplay.blit(label, (940, (30 + self.text_y1)))
 
     def gameAction(self, selection, text_buff):
         # setting the trigger for custom events.
         #pygame.time.set_timer(self.player_hammer_pick, 250)
-        print("start of gameAction")
         count = 0
         alternate = 0
         self.gameLoop = False
@@ -598,10 +596,11 @@ def start_game(buff, text_buff, buff2):
     g = GameInstance()
     while True:
         action = buff.get()
-        print("action is", action)
+        print("selection is", action)
         g.gameAction(action, text_buff)
         print("returned from game action")
-        buff2.put(1)
+        if action not in [81, 82]:
+            buff2.put(1)
 
 def control_thread(buff, text_buff,buff2):
     print("In the control threadpython ")

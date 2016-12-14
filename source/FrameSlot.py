@@ -1,101 +1,37 @@
-from gtts import gTTS
-import pygame
-from pygame import mixer
-from tempfile import TemporaryFile
-
 class FrameSlot:
-
-    def textToSpeech(self, msg):
-        #print(msg)
-        tts = gTTS(text=msg, lang='en')
-        #print(text)
-        tts.save("rec.mp3")
-        mixer.init()
-        mixer.music.load("rec.mp3")
-        mixer.music.play()
-        while mixer.music.get_busy():
-            pygame.time.Clock().tick(2)
-
-    def greeting(self, action):
-        if(action == "gf"):
-            msg = "Hey, The objective of this game is to find your way out of this room by unlocking the door.Let's start, What do you want to do? "
-            self.textToSpeech(msg)
-        elif(action == "ga"):
-            msg= "Well, hello again.You wanna continue?"
-            self.textToSpeech(msg)
-
-    def possession(self, action):
-        if(action == "pk"):
-            msg="You picked up the key"
-            self.textToSpeech(msg)
-        elif(action == "pka"):
-            msg="You already have the key"
-            self.textToSpeech(msg)
-        elif(action == "ph"):
-            msg="You picked up the hammer"
-            self.textToSpeech(msg)
-        elif(action == "pha"):
-            msg="You already have the hammer"
-            self.textToSpeech(msg)
-        elif(action == "pui"):
-            msg="The item could not be located"
-            self.textToSpeech(msg)
-
-    def release(self, action):
-         if(action == "rk"):
-             msg="You dropped the key"
-             self.textToSpeech(msg)
-         elif(action == "rka"):
-             msg="You do not have the key "
-             self.textToSpeech(msg)
-         elif(action == "rh"):
-             msg="You dropped the hammer"
-             self.textToSpeech(msg)
-         elif(action == "rha"):
-             msg="You do not have the hammer with you"
-             self.textToSpeech(msg)
-         elif(action == "rui"):
-             msg="You do not have the item"
-             self.textToSpeech(msg)
-
-    def unlock(self, action):
-        if(action == "ud"):
-            msg="The door is now open."
-            self.textToSpeech(msg)
-        elif(action == "udnk"):
-            msg="You do not have the key to open the door"
-            self.textToSpeech(msg)
-        elif(action == "dao"):
-            msg="The door is already open"
-            self.textToSpeech(msg)
-        elif(action == "dui"):
-            msg="The item cannot be found"
-            self.textToSpeech(msg)
-
-    def Break(self, action):
-        if(action == "bd"):
-            msg="The door is open now"
-            self.textToSpeech(msg)
-        elif(action == "bdnk"):
-            msg="You do not have the hammer"
-            self.textToSpeech(msg)
-        elif(action == "dab"):
-            msg="The door is already open"
-            self.textToSpeech(msg)
-        elif(action == "dui"):
-            msg="The item cannot be found"
-            self.textToSpeech(msg)
-
-    def undefined(self, action):
-        if(action == "ud"):
-            msg="You cannot do that"
-            self.textToSpeech(msg)
-
-    def goodbye(self, action):
-        if(action == "gb"):
-            msg="Good bye"
-            self.textToSpeech(msg)
-
-if __name__ == "__main__":
-    fs = FrameSlot()
-    fs.Break("bd")
+    def __init__(self):
+        self.msg=" "
+    def frameSlot(self,action,entity):
+        if(action=="greeting"):
+            self.msg="Hi, You are a brave knight on a mission to find the treasure located within this castle. Your objective is to obtain the treasure"
+            "by interacting with various objects within the game.To understand this better,lets walk through a tutorial"."You need not tell the character to move around it will find its way towards the object"
+            "Now You outside a castle and there is a hammer near you .Lets pick up the hammer"
+        elif(action=="PickUp"):
+            value=randint(0,2)
+            if(value==0):
+                self.msg="you picked up the "+" "+entity
+            elif(value==1):
+                self.msg="The"+" "+entity+ "has been picked up"
+            elif(value==2):
+                self.msg="you took the"+" "+entity
+        self.texttospeech(self.msg)
+        elif(action=="pickUpHammer"):
+            self.msg="Good Now that you have the hammer lets break the wall"
+            self.texttospeech(self.msg)
+        elif(action=="entityUndefined"):
+            self.msg="I am sorry  the object you specified could not be found in the castle Please try again"
+        elif(action=="noKillDragon"):
+            self.msg="you do not want to go near the dragon unarmed"
+            self.texttospeech(self.msg)
+        elif(action=="donotPossessKey"):
+            self.msg="The key to the chest is guarded by the dragon"
+            self.texttospeech(self.msg)
+        elif(action=="PickUpSword"):
+            self.msg="Who dares to enter my castleYou think you deserve this sword? If you're really worthy of it,you'll be able to answer my riddle first.
+            "How many components does a Dialog system have?"
+            self.texttospeech(self.msg)
+        elif(action=="correctAnswer"):
+            self.msg="You are here is your sword go kill the dragon"
+            self.texttospeech(self.msg)
+        elif(action="wrongAnswer"):
+            self.msg="You answer is wrong try again "

@@ -35,10 +35,14 @@ def startDialogManager(buff, text_buff, buff2):
     init_asr()
     # initializing the language classifier.
     l = langClassifier()
+    d = DialogManager()
 
     count = 0
+    first_part = True
 
     while True:
+        first
+
         temp = buff2.get()
         print("Start of recording")
         text = " "

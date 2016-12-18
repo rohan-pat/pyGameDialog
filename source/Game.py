@@ -615,8 +615,11 @@ if __name__ == "__main__":
     # buff2.put(1)
     text_buff = mp.Queue()
 
-    # starting game thread.
-    gameThread = threading.Thread(target=control_thread, args=(event_buff,text_buff,buff2,))
-    gameThread.start()
+    # starting game process.
+    # this works on mac, not sure if it would work on windows.
+    # ctx = mp.get_context('spawn')
+    # controlProcess = ctx.Process(target=control_thread, args=(event_buff,text_buff,buff2,))
+    controlThread = threading.Thread(target=control_thread, args=(event_buff, text_buff, buff2, ))
+    controlThread.start()
 
     start_game(event_buff, text_buff, buff2)

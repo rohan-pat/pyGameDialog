@@ -1,0 +1,5 @@
+# environment variables
+pyGameEnv
+
+# python cache
+__pycache__
